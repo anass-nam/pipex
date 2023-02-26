@@ -1,0 +1,6 @@
+# define ROMODE 00444
+# define RWMODE 00666
+# define FAIL -1
+# define ERPATH "pipex: PATH variable not found"
+# define ERHEAP "malloc: failed to allocate the required memory"
+# define ERINVC "pipex: not a valid command"

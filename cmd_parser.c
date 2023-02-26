@@ -1,28 +1,13 @@
 #include "pipex.h"
 
-// free 2d arr
-void    free_double(char **arr)
-{
-    int i;
-
-    i = 0;
-    while (*(arr + i))
-    {
-        free(*(arr + i));
-        i++;
-    }
-    free(arr);
-}
-// check for cmd existence and usability
-char    *get_exec_path(char *cmd, char **paths)
+// check if givin cmd is valid (exist, executable)
+static char    *get_exec_path(char *cmd, char **paths)
 {
     char    *current;
     char    *valid;
     int     i;
 
     valid = NULL;
-    if (!paths)
-        return NULL;
     i = 0;
     while (*(paths + i))
     {
@@ -38,7 +23,7 @@ char    *get_exec_path(char *cmd, char **paths)
     return (valid);
 }
 // prepare cmd and it args
-char **parse_cmd(const char *cmd)
+static char **parse_cmd(const char *cmd)
 {
     char **parsed_cmd;
     char *tmp;
@@ -48,28 +33,29 @@ char **parse_cmd(const char *cmd)
     *parsed_cmd = ft_strjoin("/", tmp);
     if (!parsed_cmd)
     {
-        perror("Erorr");
+        perror(ERHEAP);
         exit(EXIT_FAILURE);
     }
     free(tmp);
     return (parsed_cmd);
 }
 
-t_pip *get_cmd(const char *cmd_basename, char **paths)
+t_cmd *get_cmd(const char *cmd_basename, char **paths)
 {
-    t_pip   *cmd;
+    t_cmd   *cmd;
 
-    cmd = (t_pip *)malloc(sizeof(t_pip));
+    cmd = (t_cmd *)malloc(sizeof(t_cmd));
     if (!cmd)
     {
-        perror("Error");
+        ft_putendl_fd(ERHEAP, 2);
         exit(EXIT_FAILURE);
     }
-    cmd->cmd = parse_cmd(cmd_basename);
-    cmd->cmd_fullpath = get_exec_path(cmd->cmd[0], paths);
-    if (!cmd->cmd_fullpath)
+    cmd->args = parse_cmd(cmd_basename);
+    cmd->fullpath = get_exec_path(cmd->args[0], paths);
+    if (!cmd->fullpath)
     {
-        perror("Error");
+        ft_putendl_fd(ERINVC, 2);
+        ft_putendl_fd((char *)cmd_basename, 2);
         exit(EXIT_FAILURE);
     }
     return (cmd);
