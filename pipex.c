@@ -1,5 +1,13 @@
 #include "pipex.h"
 
+/*
+	open, close, read, write,
+	malloc, free, perror,
+	strerror, access, dup, dup2,
+	execve, exit, fork, pipe,
+	unlink, wait, waitpid
+*/
+
 static void		is_failed(int indicator, char *func)
 {
 	if (indicator < 0)
