@@ -7,7 +7,7 @@ void	console_err(char *err_holder, ...)
 
 	i = 0;
 	if (err_holder)
-    {
+	{
 		va_start(args, err_holder);
 		while (*(err_holder + i))
 		{
@@ -18,12 +18,12 @@ void	console_err(char *err_holder, ...)
 			i++;
 		}
 		va_end(args);
-	} 
+	}
 }
 
-void	free_2d(void **ptr)
+void	free_2d(char **ptr)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (ptr[i])
@@ -43,22 +43,23 @@ void	free_cmds(t_cmd **cmd, int i)
 		free(cmd[i]->fullpath);
 		cmd[i]->fullpath = NULL;
 		free_2d(cmd[i]->args);
+		free(cmd[i]);
+		cmd[i] = NULL;
 	}
 	free(cmd);
 	cmd = NULL;
 }
 
-void    release(t_pipex *pipex, t_byte option)
+void	release(t_pipex *pipex, t_byte option)
 {
 	if (option & INFILE)
 		close(pipex->infile);
 	if (option & OUTFILE)
 		close(pipex->outfile);
-	if (option & PIPE)
-	{
+	if (option & PIPERD)
 		close(pipex->pipe_fd[0]);
+	if (option & PIPEWR)
 		close(pipex->pipe_fd[1]);
-	}
 	if (option & CMDS)
 		free_cmds(pipex->cmd, 2);
 	if (option & PROC_SUCCESS)

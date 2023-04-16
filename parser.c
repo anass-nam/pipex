@@ -1,18 +1,18 @@
 #include "pipex.h"
 
-static char	*get_cmd_fullpath(char *basename, char const **path)
+static char	*get_cmd_fullpath(char const *basename, char const **path)
 {
 	char	*cmd;
 	char	*cmd_fullpath;
 
-	cmd	= ft_strjoin("/", basename);
+	cmd = ft_strjoin("/", basename);
 	if (cmd == NULL)
-		return(console_err("$\n", ERHEAP), NULL);
+		return (console_err("$\n", ERHEAP), NULL);
 	while (*path)
 	{
 		cmd_fullpath = ft_strjoin(*path, cmd);
 		if (cmd_fullpath == NULL)
-			return(console_err("$\n", ERHEAP), free(cmd), NULL);
+			return (console_err("$\n", ERHEAP), free(cmd), NULL);
 		if (access(cmd_fullpath, F_OK | X_OK) == 0)
 			return (free(cmd), cmd_fullpath);
 		free(cmd_fullpath);
@@ -41,7 +41,7 @@ static t_cmd	*parse_cmd(const char *av, const char **path)
 
 t_cmd	**parse_cmds(char const **av, char const **path)
 {
-	t_cmd **cmds;
+	t_cmd	**cmds;
 
 	cmds = (t_cmd **)malloc(sizeof(t_cmd *) * 2);
 	if (cmds == NULL)
@@ -51,6 +51,6 @@ t_cmd	**parse_cmds(char const **av, char const **path)
 		return (free(cmds), NULL);
 	cmds[1] = parse_cmd(av[1], path);
 	if (cmds[1] == NULL)
-		return (free_cmds(free_cmds, 1), NULL);
+		return (free_cmds(cmds, 1), NULL);
 	return (cmds);
 }
