@@ -1,48 +1,74 @@
 #include "pipex.h"
 
-int    pipex_exec(t_cmd *cmd, int fd1, int fd2, int fd3)
+static char	**get_env_path(char **env)
 {
-    int in;
-    int out;
+	char	**path;
 
-    if (close(fd3) == FAIL)
-        return (FAIL);
-    in = dup2(fd1, STDIN_FILENO);
-    if (close(fd1) == FAIL)
-        return (FAIL);
-    out = dup2(fd2, STDOUT_FILENO);
-    if (close(fd2) == FAIL)
-        return (FAIL);
-    if (in == FAIL || out == FAIL)
-        return (FAIL);
-    return (execve(cmd->fullpath, cmd->args, NULL));
+	if (env == NULL)
+		return (console_err("$\n", ERENV), NULL);
+	while (*env)
+	{
+		if (ft_strncmp(*env, "PATH=", 5) == 0)
+		{
+			env[3] = '.';
+			env[4] = ':';
+			path = ft_split((*env) + 3, ':');
+			if (path == NULL)
+				return (console_err("$\n", ERHEAP), NULL);
+			return (path);
+		}
+		env++;
+	}
+	return (console_err("$\n", ERPATH), NULL);
 }
 
-int main(int argc, char const *argv[], char const **env)
+static void	pipex_init(t_pipex *pipex, char const **av, char **env)
 {
-    t_pipex *pipex;
-    int     fd[2];
-    pid_t   pid[2];
+	char const	**path;
 
-    pipex = parcer(argc, argv, env);
-    if (pipe(fd) == FAIL)
-        safe_exit(EXIT_FAILURE, pipex, NULL);
-    pid[0] = fork();
-    if (pid[0] == FAIL)
-        safe_exit(EXIT_FAILURE, pipex, fd);
-    if (pid[0] == 0)
-        if (pipex_exec(pipex->cmd[0], pipex->infile, fd[1], fd[0]) == FAIL)
-            safe_exit(EXIT_FAILURE, pipex, fd);
-    pid[1] = fork();
-    if (pid[1] == FAIL)
-        safe_exit(EXIT_FAILURE, pipex, fd);
-    if (pid[1] == 0 && pid[0])
-        if (pipex_exec(pipex->cmd[1], fd[0], pipex->outfile, fd[1]) == FAIL)
-            safe_exit(EXIT_FAILURE, pipex, fd);
-    close(fd[0]);
-    close(fd[1]);
-    waitpid(pid[0], NULL, 0);
-    waitpid(pid[1], NULL, 0);
-    safe_exit(EXIT_SUCCESS, pipex, NULL);
-    return 0;
+	if (pipe(pipex->pipe_fd) == FAIL)
+		exit(EXIT_FAILURE);
+	path = get_env_path(env);
+	if (path == NULL)
+		release(pipex, PIPE | PROC_FAILURE);
+	pipex->cmd = parse_cmds(av + 1, path);
+	free_2d(path);
+	if (pipex->cmd == NULL)
+		release(pipex, PIPE | PROC_FAILURE);
+	pipex->infile = open(av[0], O_RDONLY);
+	if (pipex->infile == FAIL)
+	{
+		perror("open");
+		release(pipex, PIPE | CMDS | PROC_FAILURE);
+	}
+	pipex->outfile = open(av[3], O_RDWR | O_CREAT | O_TRUNC, 00644);
+	if (pipex->outfile == FAIL)
+	{
+		perror("open");
+		release(pipex, PIPE | CMDS | INFILE | PROC_FAILURE);
+	}
+}
+
+int	main(int ac, char const **av, char **env)
+{
+	t_pipex	pipex;
+
+	if (ac != 5)
+		exit(EXIT_FAILURE);
+	pipex_init(&pipex, av + 1, env);
+	pipex.pid[0] = fork();
+	if (pipex.pid[0] == -1)
+		release(&pipex, ALL_FAILURE);
+	if (pipex.pid[0] == 0)
+		pipex_exec();
+	pipex.pid[1] = fork();
+	if (pipex.pid[1] == -1)
+		release(&pipex, ALL_FAILURE);
+	if (pipex.pid[1] == 0 && pipex.pid[0] != 0)
+		pipex_exec();
+	release(&pipex, PIPE);
+	waitpid(pipex.pid[0], NULL, 0);
+	waitpid(pipex.pid[1], NULL, 0);
+	release(&pipex, ALL_SUCCESS);
+	return 0;
 }

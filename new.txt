@@ -1,1 +1,0 @@
--rw-r--r-- 1 me me     0 Apr 15 23:12 file.txt$
