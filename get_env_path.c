@@ -10,8 +10,8 @@ static char	**extract_path(char const *path)
 	tmp[0] = '.';
 	tmp[1] = ':';
 	paths = ft_split(tmp, ':');
-	if (isfailed(paths == NULL, ERHEAP))
-		return (NULL);
+	if (paths == NULL)
+		return (ft_putendl_fd(ERHEAP, STDERR_FILENO), NULL);
 	return (paths);
 }
 
@@ -19,8 +19,8 @@ char	**get_env_path(char const **env)
 {
 	char	**path;
 
-	if (isfailed(env == NULL, ERENV))
-		return (NULL);
+	if (env == NULL)
+		return (ft_putendl_fd(ERENV, STDERR_FILENO), NULL);
 	path = NULL;
 	while (*env)
 	{
@@ -28,7 +28,8 @@ char	**get_env_path(char const **env)
 			path = extract_path(*env);
 		env++;
 	}
-	isfailed(path == NULL, ERPATH);
+	if (path == NULL)
+		ft_putendl_fd(ERPATH, STDERR_FILENO);
 	return (path);
 }
 

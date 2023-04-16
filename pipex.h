@@ -1,8 +1,11 @@
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <sys/wait.h>
-#include "libft.h"
+#ifndef PIPEX_H
+# define PIPEX_H
+
+# include <unistd.h>
+# include <fcntl.h>
+# include <stdio.h>
+# include <sys/wait.h>
+# include "libft.h"
 
 typedef struct s_cmd
 {
@@ -13,16 +16,10 @@ typedef struct s_cmd
 typedef struct	s_pipex
 {
 	t_cmd	**cmd;
+	int		cmd_count;
 	int		infile;
 	int		outfile;
 }	t_pipex;
-
-
-typedef enum    e_err
-{
-	syscall_fail = -1,
-	malloc_fail = 1
-}               t_err;
 
 # define FAIL -1
 # define ERENV "pipex: cannot access Environment variables"
@@ -31,7 +28,10 @@ typedef enum    e_err
 # define ERINVC "\" command not found"
 
 char	**get_env_path(char const **env);
+t_pipex	*parcer(int argc, char const *argv[], char const **env);
 //	utils
-int		isfailed(t_err error, char *msg);
 void	free_2darr(char **ptr);
 void    free_cmds(t_cmd **cmd, int i);
+void    safe_exit(int status, t_pipex *pipex, int fd[2]);
+
+#endif

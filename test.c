@@ -1,12 +1,21 @@
-#include <unistd.h>
-#include <fcntl.h>
-
-int main(void)
+#include <stdio.h>
+#include <stdlib.h>
+#define A3 0x4
+#define A4 0x8
+void bit(unsigned char option)
 {
-    int fd = open("dd", O_RDWR | O_CREAT | O_TRUNC);
-    char    buff[10];
-    write(fd, "anass nammal", 12);
-    write(fd, "\n", 1);
-    close(fd);
+    if (option & EXIT_SUCCESS)
+        printf("1\n");
+    if (option & EXIT_FAILURE)
+        printf("2\n");
+    if (option & A3)
+        printf("3\n");
+    if (option & A4)
+        printf("4\n");
+}
+
+int main(int argc, char const *argv[])
+{
+    bit(EXIT_SUCCESS | EXIT_FAILURE | A3 | A4);
     return 0;
 }
