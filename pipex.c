@@ -92,7 +92,10 @@ int	main(int ac, char const **av, char **env)
 	t_pipex	pipex;
 
 	if (ac != 5)
+	{
+		console_err("$\n$\n", ERARGS, USAGE);
 		exit(EXIT_FAILURE);
+	}
 	pipex_init(&pipex, av + 1, env);
 	pipex.pid[0] = fork();
 	if (pipex.pid[0] == -1)
