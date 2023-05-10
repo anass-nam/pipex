@@ -31,6 +31,8 @@ static t_cmd	*parse_cmd(const char *av, const char **path)
 {
 	t_cmd	*cmd;
 
+	if (*av == '\0')
+		return (console_err("$\n$\n", EREMPT, USAGE), NULL);
 	cmd = (t_cmd *)malloc(sizeof(t_cmd));
 	if (cmd == NULL)
 		return (console_err("$\n", ERHEAP), NULL);

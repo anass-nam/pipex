@@ -83,8 +83,9 @@ void	pipex_exec(t_pipex *pipex, t_byte o)
 			release(pipex, ALL_FAILURE & ~(OUTFILE | PIPERD));
 	}
 	close(pipex->pipe_fd[o]);
-	if (execve(pipex->cmd[o]->fullpath, pipex->cmd[o]->args, NULL) == FAIL)
-		release(pipex, CMDS | PROC_FAILURE);
+	execve(pipex->cmd[o]->fullpath, pipex->cmd[o]->args, NULL);
+	perror("execve");
+	release(pipex, CMDS | PROC_FAILURE);
 }
 
 int	main(int ac, char const **av, char **env)

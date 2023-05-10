@@ -42,6 +42,7 @@ typedef unsigned char	t_byte;	// unsigned byte (8 bits)
 # define ERPATH "pipex: PATH variable not found"
 # define ERHEAP "malloc: Failed to allocate the required memory"
 # define ERARGS	"pipex: too few / many args"
+# define EREMPT	"pipex: empty argument!"
 # define USAGE	"USAGE: ./pipex \"infile\" \"cmd1\" \"cmd2\" \"outfile\""
 
 // check if input command are valid and parse it

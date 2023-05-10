@@ -5,7 +5,7 @@ LFTDIR= libft
 LIBFT= libft.a
 LFT= -I./$(LFTDIR) -L./$(LFTDIR) -lft
 CC= gcc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 
 all: $(NAME)
 

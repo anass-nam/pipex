@@ -1,0 +1,4 @@
+	@echo Compiling: $@ ... Done!
+	@echo Compiling: $< ... Done!
+	@echo Cleaned
+	@echo Fully cleaned
