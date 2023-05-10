@@ -5,6 +5,10 @@ static char	*get_cmd_fullpath(char const *basename, char const **path)
 	char	*cmd;
 	char	*cmd_fullpath;
 
+	if (*basename == '/' && access(basename, F_OK | X_OK) == -1)
+		return (perror("access"), NULL);
+	else if (*basename == '/')
+		return (ft_strdup(basename));
 	cmd = ft_strjoin("/", basename);
 	if (cmd == NULL)
 		return (console_err("$\n", ERHEAP), NULL);

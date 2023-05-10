@@ -1,6 +1,34 @@
-pipex:
-	cc -g -Wall -Wextra -Werror *.c -o pipex -lft
+NAME= pipex
+SRC= parser.c pipex.c utils.c
+OBJ= $(SRC:.c=.o)
+LFTDIR= libft
+LIBFT= libft.a
+LFT= -I./$(LFTDIR) -L./$(LFTDIR) -lft
+CC= gcc
+CFLAGS = -Wall -Wextra -Werror
+
+all: $(NAME)
+
+$(NAME): $(LIBFT) $(OBJ) pipex.h
+	@echo Compiling: $@ ... Done!
+	@$(CC) $(CFLAGS) $(OBJ) $(LFT) -o $@
+
+$(LIBFT):
+	@make -C $(LFTDIR)
+
+%.o: %.c pipex.h
+	@echo Compiling: $< ... Done!
+	@$(CC) $(CFLAGS) -c $<
+
 clean:
-	rm -f pipex
+	@echo Cleaned
+	@rm -f $(OBJ)
+
 fclean: clean
-	rm -f *.txt
+	@echo Fully cleaned
+	@rm -f $(NAME)
+	@make fclean -C $(LFTDIR)
+
+re: fclean all
+
+.PHONY: all bonus clean fclean re
